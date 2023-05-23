@@ -1,4 +1,3 @@
-
 import com.google.gson.Gson;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
@@ -9,16 +8,11 @@ import parser.NoSuchFileException;
 import parser.Parser;
 import shop.Cart;
 import shop.RealItem;
-import shop.VirtualItem;
 
-
-import java.io.*;
+import java.io.File;
 import java.util.stream.Stream;
 
-
-
-public class UnitTests {
-
+public class JsonParserTests {
     private Gson gson;
     private Cart cart;
 
@@ -80,7 +74,7 @@ public class UnitTests {
         }
 
         @ParameterizedTest
-        @MethodSource ("invalidFileProvider")
+        @MethodSource("invalidFileProvider")
         void exceptionTest(File file) {
 
             Parser parser = new JsonParser();
@@ -103,115 +97,6 @@ public class UnitTests {
         @AfterEach
         public void tearDown() {
 
-        }
-
-    }
-
-    @Nested
-    class RealItemTest {
-
-        @BeforeEach
-        public void setUp() {
-            cart = new Cart("Test");
-
-        }
-
-        @Test
-        public void realItemTest() {
-            RealItem car = new RealItem();
-            double weight = 1560;
-            car.setWeight(weight);
-            cart.addRealItem(car);
-
-            Parser parser = new JsonParser();
-            parser.writeToFile(cart);
-
-            Assertions.assertEquals(weight, car.getWeight());
-
-        }
-
-        @AfterEach
-        public void tearDown() {
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-            gsonFile.delete();
-        }
-
-    }
-
-
-    @Nested
-    class VirtualItemTest {
-
-        @BeforeEach
-        public void setUp() {
-            gson = new Gson();
-            cart = new Cart("Test");
-
-        }
-
-        @Test
-        public void virtualItemTest() {
-
-            VirtualItem disk = new VirtualItem();
-            double size = 30000;
-            disk.setSizeOnDisk(size);
-            cart.addVirtualItem(disk);
-
-
-            Parser parser = new JsonParser();
-            parser.writeToFile(cart);
-
-            Assertions.assertEquals(size, disk.getSizeOnDisk());
-
-        }
-
-        @AfterEach
-        public void tearDown() {
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-            gsonFile.delete();
-        }
-
-    }
-
-
-    @Nested
-    class CartTest {
-
-        @BeforeEach
-        public void setUp() {
-        }
-
-        @Test
-        public void cartNameTest() {
-            String name = "Test";
-            cart = new Cart(name);
-
-            Assertions.assertEquals(name, cart.getCartName());
-        }
-
-        @Test
-        public void cartRealItemTest() {
-            cart = new Cart("Test");
-            double TAX = 0.2;
-
-            RealItem car = new RealItem();
-            double price = 3000;
-            car.setPrice(price);
-            cart.addRealItem(car);
-
-            Parser parser = new JsonParser();
-            parser.writeToFile(cart);
-
-            double totalPrice = price + price*TAX;
-
-            Assertions.assertEquals(totalPrice, cart.getTotalPrice());
-        }
-
-
-        @AfterEach
-        public void tearDown() {
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-            gsonFile.delete();
         }
 
     }
