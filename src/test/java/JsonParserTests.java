@@ -16,89 +16,74 @@ public class JsonParserTests {
     private Gson gson;
     private Cart cart;
 
+    @BeforeEach
+    public void setUp() {
+        gson = new Gson();
+        cart = new Cart("Test");
+    }
 
-    @Nested
-    class JsonParserTest {
+    @Test
+    public void fileExistTest() {
 
-        @BeforeEach
-        public void setUp() {
-            gson = new Gson();
-            cart = new Cart("Test");
-        }
+        Parser parser = new JsonParser();
+        parser.writeToFile(cart);
 
-        @Test
-        public void fileExistTest() {
+        File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
 
-            Parser parser = new JsonParser();
-            parser.writeToFile(cart);
-
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-
-            Assertions.assertAll(
+        Assertions.assertAll(
                     "GroupedAssertionFileExist",
-                    () -> Assertions.assertTrue(gsonFile.exists()),
-                    () -> Assertions.assertTrue(gsonFile.isFile())
-            );
+                    () -> Assertions.assertTrue(gsonFile.exists(), "Assert validation for the file existing price is failed"),
+                    () -> Assertions.assertTrue(gsonFile.isFile(), "Assert file validation is failed")
+        );
 
-            gsonFile.delete();
-        }
+        gsonFile.delete();
+    }
 
+    @Disabled
+    @Test
+    public void readFromFileTest() {
 
+        Parser parser = new JsonParser();
 
+        RealItem car = new RealItem();
+        car.setName("A");
+        cart.addRealItem(car);
 
-        @Disabled
-        @Test
-        public void readFromFileTest() {
+        parser.writeToFile(cart);
 
-            Parser parser = new JsonParser();
+        File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
+        Cart gsonCart = parser.readFromFile(gsonFile);
 
-            RealItem car = new RealItem();
-            car.setName("A");
-            cart.addRealItem(car);
+        cart.showItems();
+        gsonCart.showItems();
 
-            parser.writeToFile(cart);
-
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-            Cart gsonCart = parser.readFromFile(gsonFile);
-
-            cart.showItems();
-            gsonCart.showItems();
-
-            Assertions.assertAll(
+        Assertions.assertAll(
                     "GroupedAssertionReadFromFile",
-                    (Executable) () -> Assertions.assertTrue(gsonFile.canRead()),
-                    (Executable) () -> Assertions.assertInstanceOf(Cart.class, gsonCart)
-            );
-            gsonFile.delete();
+                    (Executable) () -> Assertions.assertTrue(gsonFile.canRead(), "Assert validation for the file's readability is failed"),
+                    (Executable) () -> Assertions.assertInstanceOf(Cart.class, gsonCart, "Assert instance validation for the cart is failed")
+        );
+        gsonFile.delete();
+    }
 
-        }
+    @ParameterizedTest
+    @MethodSource("invalidFileProvider")
+    void exceptionTest(File file) {
 
-        @ParameterizedTest
-        @MethodSource("invalidFileProvider")
-        void exceptionTest(File file) {
+        Parser parser = new JsonParser();
+        File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
 
-            Parser parser = new JsonParser();
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-
-            Assertions.assertThrows(NoSuchFileException.class, () -> {
+        Assertions.assertThrows(NoSuchFileException.class, () -> {
                 parser.readFromFile(gsonFile);
-            });
-        }
-        private static Stream<File> invalidFileProvider(){
-            return Stream.of(
+        }, "Assert exception validation is failed");
+    }
+    private static Stream<File> invalidFileProvider(){
+        return Stream.of(
                     new File("src/main/Test.json"),
                     new File("src/main/resources/test.json"),
                     new File("src/main/resources/Test"),
                     new File(""),
                     new File("src/main/Test")
-            );
-        }
-
-        @AfterEach
-        public void tearDown() {
-
-        }
-
+        );
     }
 
 }

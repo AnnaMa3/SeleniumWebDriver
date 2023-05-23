@@ -13,46 +13,37 @@ public class CartTests {
     private Cart cart;
 
 
-    @Nested
-    class CartTest {
+    @Test
+    public void cartNameTest() {
+        String name = "Test";
+        cart = new Cart(name);
 
-        @BeforeEach
-        public void setUp() {
-        }
+        Assertions.assertEquals(name, cart.getCartName(), "Assert validation for the Cart name is failed");
+    }
 
-        @Test
-        public void cartNameTest() {
-            String name = "Test";
-            cart = new Cart(name);
+    @Test
+    public void cartRealItemTest() {
+        cart = new Cart("Test");
+        double TAX = 0.2;
 
-            Assertions.assertEquals(name, cart.getCartName());
-        }
+        RealItem car = new RealItem();
+        double price = 3000;
+        car.setPrice(price);
+        cart.addRealItem(car);
 
-        @Test
-        public void cartRealItemTest() {
-            cart = new Cart("Test");
-            double TAX = 0.2;
+        Parser parser = new JsonParser();
+        parser.writeToFile(cart);
 
-            RealItem car = new RealItem();
-            double price = 3000;
-            car.setPrice(price);
-            cart.addRealItem(car);
+        double totalPrice = price + price*TAX;
 
-            Parser parser = new JsonParser();
-            parser.writeToFile(cart);
-
-            double totalPrice = price + price*TAX;
-
-            Assertions.assertEquals(totalPrice, cart.getTotalPrice());
-        }
+        Assertions.assertEquals(totalPrice, cart.getTotalPrice(), "Assert validation for the total price is failed");
+    }
 
 
-        @AfterEach
-        public void tearDown() {
-            File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
-            gsonFile.delete();
-        }
-
+    @AfterEach
+    public void tearDown() {
+        File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
+        gsonFile.delete();
     }
 
 }
