@@ -3,6 +3,9 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import org.mockito.Mock;
+
 import parser.JsonParser;
 import parser.NoSuchFileException;
 import parser.Parser;
@@ -10,7 +13,11 @@ import shop.Cart;
 import shop.RealItem;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.stream.Stream;
+
+import static org.mockito.Mockito.*;
 
 public class JsonParserTests {
     private Gson gson;
@@ -64,6 +71,24 @@ public class JsonParserTests {
         );
         gsonFile.delete();
     }
+
+
+    @Mock
+    private Cart mockedCart;
+
+    @Test
+    public void ioExceptionTest() throws IOException {
+        Cart mockedCart = new Cart("Mock");
+        Parser parser = new JsonParser();
+
+
+        Assertions.assertThrows(IOException.class, () -> {
+            when(new FileWriter(anyString())).thenThrow(new IOException());
+            parser.writeToFile(mockedCart);
+        }, "Assert exception validation is failed");
+
+    }
+
 
     @ParameterizedTest
     @MethodSource("invalidFileProvider")
