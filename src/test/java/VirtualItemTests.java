@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
-import org.junit.jupiter.api.*;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 import parser.JsonParser;
 import parser.Parser;
 import shop.Cart;
@@ -12,13 +13,13 @@ public class VirtualItemTests {
     private Gson gson;
     private Cart cart;
 
-    @BeforeEach
+    @org.testng.annotations.BeforeMethod (groups = "second")
     public void setUp() {
         gson = new Gson();
         cart = new Cart("Test");
     }
 
-    @Test
+    @Test(groups = "second")
     public void virtualItemTest() {
 
         VirtualItem disk = new VirtualItem();
@@ -29,10 +30,10 @@ public class VirtualItemTests {
         Parser parser = new JsonParser();
         parser.writeToFile(cart);
 
-        Assertions.assertEquals(size, disk.getSizeOnDisk(), "Assert validation for the size on disk is failed");
+        Assert.assertEquals(size, disk.getSizeOnDisk(), "Assert validation for the size on disk is failed");
     }
 
-    @AfterEach
+    @org.testng.annotations.AfterMethod (groups = "second")
     public void tearDown() {
         File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
         gsonFile.delete();

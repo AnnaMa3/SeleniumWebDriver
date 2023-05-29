@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
-import org.junit.jupiter.api.*;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 import parser.JsonParser;
 import parser.Parser;
 import shop.Cart;
@@ -11,12 +12,12 @@ public class RealItemTests {
 
     private Gson gson;
     private Cart cart;
-    @BeforeEach
+    @org.testng.annotations.BeforeMethod (groups = "second")
     public void setUp() {
         cart = new Cart("Test");
     }
 
-    @Test
+    @Test(groups = "second")
     public void realItemTest() {
         RealItem car = new RealItem();
         double weight = 1560;
@@ -26,10 +27,10 @@ public class RealItemTests {
         Parser parser = new JsonParser();
         parser.writeToFile(cart);
 
-        Assertions.assertEquals(weight, car.getWeight(), "Assert validation for the weight is failed");
+        Assert.assertEquals(weight, car.getWeight(), "Assert validation for the weight is failed");
     }
 
-    @AfterEach
+    @org.testng.annotations.AfterMethod (groups = "second")
     public void tearDown() {
         File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
         gsonFile.delete();
