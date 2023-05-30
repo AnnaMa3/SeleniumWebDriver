@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name = "Second suite">
+    <test name = "Groups">
+        <groups>
+            <run>
+                <include name = "first"/>
+                <include name = "second"/>
+                <exclude name = "third"/>
+            </run>
+        </groups>
+        <classes>
+            <class name = "CartTests"/>
+            <class name = "JsonParserTests"/>
+            <class name = "RealItemTests"/>
+            <class name = "VirtualItemTests"/>
+        </classes>
+    </test>
+</suite>

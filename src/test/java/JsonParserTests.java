@@ -1,11 +1,13 @@
 import com.google.gson.Gson;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.function.Executable;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import org.mockito.Mock;
 
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 import parser.JsonParser;
 import parser.NoSuchFileException;
 import parser.Parser;
@@ -15,7 +17,7 @@ import shop.RealItem;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.stream.Stream;
+
 
 import static org.mockito.Mockito.*;
 
@@ -23,13 +25,15 @@ public class JsonParserTests {
     private Gson gson;
     private Cart cart;
 
-    @BeforeEach
-    public void setUp() {
+
+    @Parameters({"cart name"})
+    @org.testng.annotations.BeforeMethod (groups = "first")
+    public void setUp(@Optional String cartName) {
         gson = new Gson();
-        cart = new Cart("Test");
+        cart = new Cart(cartName);
     }
 
-    @Test
+    @Test(groups = "first")
     public void fileExistTest() {
 
         Parser parser = new JsonParser();
@@ -37,17 +41,15 @@ public class JsonParserTests {
 
         File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
 
-        Assertions.assertAll(
-                    "GroupedAssertionFileExist",
-                    () -> Assertions.assertTrue(gsonFile.exists(), "Assert validation for the file existing price is failed"),
-                    () -> Assertions.assertTrue(gsonFile.isFile(), "Assert file validation is failed")
-        );
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertTrue(gsonFile.exists(), "Assert validation for the file existing price is failed");
+        softAssert.assertTrue(gsonFile.isFile(), "Assert file validation is failed");
+        softAssert.assertAll();
 
         gsonFile.delete();
     }
 
-    @Disabled
-    @Test
+    @Test(enabled = false)
     public void readFromFileTest() {
 
         Parser parser = new JsonParser();
@@ -63,12 +65,12 @@ public class JsonParserTests {
 
         cart.showItems();
         gsonCart.showItems();
+        SoftAssert softAssert = new SoftAssert();
 
-        Assertions.assertAll(
-                    "GroupedAssertionReadFromFile",
-                    (Executable) () -> Assertions.assertTrue(gsonFile.canRead(), "Assert validation for the file's readability is failed"),
-                    (Executable) () -> Assertions.assertInstanceOf(Cart.class, gsonCart, "Assert instance validation for the cart is failed")
-        );
+        softAssert.assertTrue(gsonFile.canRead(), "Assert validation for the file's readability is failed");
+        softAssert.assertTrue(gsonCart instanceof Cart, "Assert instance validation for the cart is failed");
+        softAssert.assertAll();
+
         gsonFile.delete();
     }
 
@@ -76,39 +78,43 @@ public class JsonParserTests {
     @Mock
     private Cart mockedCart;
 
-    @Test
+    @Test (groups = "third")
     public void ioExceptionTest() throws IOException {
         Cart mockedCart = new Cart("Mock");
         Parser parser = new JsonParser();
 
 
-        Assertions.assertThrows(IOException.class, () -> {
+        Assert.assertThrows(IOException.class, () -> {
             when(new FileWriter(anyString())).thenThrow(new IOException());
             parser.writeToFile(mockedCart);
-        }, "Assert exception validation is failed");
+        });
 
     }
 
 
-    @ParameterizedTest
-    @MethodSource("invalidFileProvider")
-    void exceptionTest(File file) {
+    @DataProvider(name = "Invalid path")
+    public Object[][] invalidFileProvider() {
+        return  new Object[][]{
+                {"src/main/Test.json"},
+                {"src/main/resources/test.json"},
+                {"src/main/resources/Test"},
+                {""},
+                {"src/main/Test"}
+        };
+    }
+
+    @Test (dataProvider = "Invalid path" )
+    void exceptionTest(String parameter) {
 
         Parser parser = new JsonParser();
-        File gsonFile = new File("src/main/resources/" + cart.getCartName() + ".json");
+        File gsonFile = new File(parameter);
 
-        Assertions.assertThrows(NoSuchFileException.class, () -> {
-                parser.readFromFile(gsonFile);
-        }, "Assert exception validation is failed");
+        Assert.assertThrows(NoSuchFileException.class, () -> {
+            parser.readFromFile(gsonFile);
+        });
+
     }
-    private static Stream<File> invalidFileProvider(){
-        return Stream.of(
-                    new File("src/main/Test.json"),
-                    new File("src/main/resources/test.json"),
-                    new File("src/main/resources/Test"),
-                    new File(""),
-                    new File("src/main/Test")
-        );
-    }
+
+
 
 }
