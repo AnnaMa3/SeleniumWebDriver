@@ -25,7 +25,7 @@ public class WaiterUtils {
     }
 
     public void waitForElementDisplayed(WebElement element) {
-        new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofSeconds(500)).until(webDriver -> {
+        new WebDriverWait(driver, Duration.ofSeconds(20), Duration.ofSeconds(5)).until(webDriver -> {
             try {
                 return element.isDisplayed();
             } catch (NoSuchElementException ex) {
