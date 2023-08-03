@@ -6,7 +6,7 @@ import org.openqa.selenium.support.PageFactory;
 import utils.WaiterUtils;
 
 public abstract class BasePage {
-    protected WebDriver driver;
+    protected static WebDriver driver;
     protected WaiterUtils waiter;
 
     public BasePage(WebDriver driver) {

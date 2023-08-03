@@ -12,22 +12,39 @@ public class AccountPageFactory extends BasePage {
     @FindBy(css = ".UserID-Avatar")
     private WebElement userAvatar;
 
+    @FindBy(css = ".UserID-Avatar")
+    private static WebElement userAvatarIs;
+
     @FindBy(css = ".UserWidget-Iframe")
-    private WebElement frame;
+    private static WebElement frame;
 
     @FindBy(xpath = "//*[contains(@data-testid, 'logout')]")
     private WebElement signOutButton;
+
+    @FindBy(css = ".Subname")
+    private static WebElement userName;
+
     public AccountPageFactory(WebDriver driver) {
         super(driver);
         initElements();
     }
 
-    public void logout(){
-        userAvatar.click();
-        driver.switchTo().frame(frame);
+    public HomePageFactory logout(){
+//        userAvatar.click();
+//        driver.switchTo().frame(frame);
         signOutButton.click();
+        return new HomePageFactory(driver);
     }
+
     public static boolean isDisplayed() {
         return personalContainer.isDisplayed();
     }
+
+    public static String getUserName() {
+        userAvatarIs.click();
+        driver.switchTo().frame(frame);
+        return userName.getText();
+    }
+
+
 }

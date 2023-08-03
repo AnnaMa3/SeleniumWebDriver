@@ -17,8 +17,9 @@ public class PageFactoryTest extends BaseTest {
 
         AccountPageFactory accountPageFactory = new AccountPageFactory(driver);
         Assertions.assertTrue(AccountPageFactory.isDisplayed());
-        accountPageFactory.logout();
+        Assertions.assertEquals(AccountPageFactory.getUserName(), LOGIN);
 
+        logout();
         Assertions.assertTrue(HomePageFactory.isDisplayed());
     }
 
