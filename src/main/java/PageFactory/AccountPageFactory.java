@@ -1,9 +1,9 @@
 package PageFactory;
 
 import base.BasePage;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class AccountPageFactory extends BasePage {
 
@@ -17,9 +17,9 @@ public class AccountPageFactory extends BasePage {
 
     @FindBy(xpath = "//*[contains(@data-testid, 'logout')]")
     private WebElement signOutButton;
-    public AccountPageFactory() {
-        super();
-        PageFactory.initElements(driver, this);
+    public AccountPageFactory(WebDriver driver) {
+        super(driver);
+        initElements();
     }
 
     public void logout(){

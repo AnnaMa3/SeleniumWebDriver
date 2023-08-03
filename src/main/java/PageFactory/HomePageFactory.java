@@ -1,15 +1,12 @@
 package PageFactory;
 
 import base.BasePage;
-import config.TestProperties;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class HomePageFactory extends BasePage {
 
-    private static final String LOGIN = TestProperties.get("login");
-    private static final String PASSWORD = TestProperties.get("password");
     @FindBy(css = "#passp-field-login")
     private WebElement loginField;
 
@@ -25,16 +22,18 @@ public class HomePageFactory extends BasePage {
     @FindBy(css = ".passp-auth-content")
     private static WebElement authContainer;
 
-    public HomePageFactory() {
-        super();
-        PageFactory.initElements(driver, this);
+    public HomePageFactory(WebDriver driver) {
+        super(driver);
+        initElements();
     }
 
-    public void login(){
-        loginField.sendKeys(LOGIN);
+    public void setLogin(String login){
+        loginField.sendKeys(login);
+    }
+
+    public PasswordPageFactory clickLoginButton(){
         loginButton.click();
-        passwordField.sendKeys(PASSWORD);
-        loginButton.click();
+        return new PasswordPageFactory(driver);
     }
 
     public static boolean isDisplayed() {
