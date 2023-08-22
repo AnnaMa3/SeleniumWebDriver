@@ -1,6 +1,7 @@
 package PageFactory;
 
 import driver.Driver;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,13 @@ public class TestListener implements ITestListener {
         String testName = iTestResult.getMethod().getMethodName();
         driver = Driver.getDriver();
 
-        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver);
+        Object output = ((JavascriptExecutor) driver).executeScript("return window.devicePixelRatio");
+        String value = String.valueOf(output);
+        float windowDPR = Float.parseFloat(value);
+
+        Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies
+                .viewportPasting(ShootingStrategies.scaling(windowDPR),100)).takeScreenshot(driver);
+
         AccountPageFactory.createArtifactsFolder();
 
         try {
