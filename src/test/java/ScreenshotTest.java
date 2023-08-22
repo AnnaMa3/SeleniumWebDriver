@@ -25,6 +25,5 @@ public class ScreenshotTest extends BaseTest{
         Assertions.fail("Test is failed");
 
         logout();
-        Assertions.assertTrue(HomePageFactory.isDisplayed());
     }
 }
