@@ -1,7 +1,10 @@
 package PageFactory;
 
 import driver.Driver;
+import io.qameta.allure.Allure;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,7 @@ import ru.yandex.qatools.ashot.Screenshot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
 import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -43,12 +47,16 @@ public class TestListener implements ITestListener {
         Screenshot screenshot = new AShot().shootingStrategy(ShootingStrategies
                 .viewportPasting(ShootingStrategies.scaling(windowDPR),100)).takeScreenshot(driver);
 
+        byte[] screenshotByte = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);;
         AccountPageFactory.createArtifactsFolder();
 
         try {
             File screenshotFile = new File("target/artifacts/"+testName+"failure.png");
             ImageIO.write(screenshot.getImage(), "PNG", screenshotFile);
             logger.info("Full-page screenshot is saved due to test failure: "+testName);
+//            Allure.addAttachment("Screenshot", "image/png", String.valueOf(screenshotByte));
+
+            Allure.addAttachment("Test Screenshot", new ByteArrayInputStream(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES)));
         } catch (IOException e){
             logger.error("Failed to save");
         }
