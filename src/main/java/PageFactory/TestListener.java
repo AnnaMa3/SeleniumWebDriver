@@ -54,7 +54,6 @@ public class TestListener implements ITestListener {
             File screenshotFile = new File("target/artifacts/"+testName+"failure.png");
             ImageIO.write(screenshot.getImage(), "PNG", screenshotFile);
             logger.info("Full-page screenshot is saved due to test failure: "+testName);
-//            Allure.addAttachment("Screenshot", "image/png", String.valueOf(screenshotByte));
 
             Allure.addAttachment("Test Screenshot", new ByteArrayInputStream(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES)));
         } catch (IOException e){
